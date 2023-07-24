@@ -17,11 +17,5 @@ export class SlackService {
     } catch (error) {
       logger.error('Error occurred while sending to message:', error);
     }
-    try {
-      await this.webhook.send(message);
-      logger.info('Message sent successfully');
-    } catch (error) {
-      logger.error('Error occurred while sending the message:', error);
-    }
   }
 }

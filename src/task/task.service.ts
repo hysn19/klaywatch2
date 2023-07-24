@@ -30,7 +30,10 @@ export class TaskService {
             accountName,
             currentBalance,
             transactionCount,
-            currentBlockNumber
+            currentBlockNumber,
+            this.isAnomalyDetected(
+                accountAddress, currentBalance, transactionCount
+            )
         ).payload;
 
         await this.slackService.sendMessage(message);
@@ -46,7 +49,7 @@ export class TaskService {
         await this.getAccountByCaverAndSendSlack(accountAddress, accountName)
     }
 
-    @Cron('0 0/5 * * * *') // run every 5 minutes
+    @Cron('0 0/10 * * * *') // run every 10 minutes
     async handleCron2() {
         this.isCronJobActive = true;
 
@@ -70,6 +73,12 @@ export class TaskService {
         await Promise.all(array.map(async (account) => {
             await this.getAccountByCaverAndSendSlack(account.accountAddress, account.accountName);
         }));
+    }
+
+    isAnomalyDetected(accountAddress, currentBalance, transactionCount): boolean {
+        return accountAddress === '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf'
+            && currentBalance !== '18721282.982378695'
+            && transactionCount > 0;
     }
 
     isCronJobRunning(): boolean {

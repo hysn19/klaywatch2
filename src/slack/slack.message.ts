@@ -10,9 +10,7 @@ dayjs.tz.setDefault('Asia/Seoul')
 
 @Injectable()
 export class SlackMessage {
-    constructor(accountAddress: string, accountName: string, currentBalance: string, transactionCount: string, currentBlockNumber: string) {
-        const formattedDate = new Date().toLocaleString();
-
+    constructor(accountAddress: string, accountName: string, currentBalance: string, transactionCount: string, currentBlockNumber: string, isAnomalyDetected: boolean = false) {
         this.payload = {
             blocks: [
                 {
@@ -26,7 +24,7 @@ export class SlackMessage {
                     type: 'section',
                     text: {
                         type: 'mrkdwn',
-                        text: `*계정명: <https://scope.klaytn.com/account/${accountAddress}?tabId=txList|${accountName}>*`
+                        text: `*계정 <https://scope.klaytn.com/account/${accountAddress}?tabId=txList|${accountName}>*`
                     }
                 },
                 {
@@ -37,11 +35,11 @@ export class SlackMessage {
                     fields: [
                         {
                             type: 'mrkdwn',
-                            text: `*점검결과:*\n:white_check_mark:*이상없음*:white_check_mark: or :rotating_light:*이상감지*:rotating_light:`
+                            text: isAnomalyDetected ? `*점검결과:*\n:white_check_mark:이상없음:white_check_mark:` : `*점검결과:*\n:rotating_light:이상감지:rotating_light:`
                         },
                         {
                             type: 'mrkdwn',
-                            text: `*클레이 수량(블록번호):*\n${currentBalance} KLAY(${currentBlockNumber})`
+                            text: `*클레이 수량 (블록번호):*\n${currentBalance} KLAY (<https://scope.klaytn.com/block/${currentBlockNumber}?tabId=txList|${currentBlockNumber}>)`
                         },
 
                         {

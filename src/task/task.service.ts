@@ -21,6 +21,7 @@ export class TaskService {
     accountAddress: string,
     accountName: string,
   ) {
+		try {
     const [currentBalance, transactionCount, currentBlockNumber] =
       await Promise.all([
         this.caverService.getBalance(accountAddress),
@@ -42,6 +43,9 @@ export class TaskService {
     ).payload;
 
     await this.slackService.sendMessage(message);
+		} catch (error) {
+			logger.error('Error occurred while processing: ${error}')
+		}
   }
 
   @Cron('0 0 * * * *') // runs every hour at the 0 minute.

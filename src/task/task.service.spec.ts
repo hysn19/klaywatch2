@@ -16,7 +16,7 @@ describe('TaskService', () => {
         expect(taskService).toBeDefined();
     });
 
-    it('should handle cron job', () => {
+    it('should handle cron job1', () => {
         // Jest의 useFakeTimers()를 사용하여 시간을 조작할 수 있음
         jest.useFakeTimers();
 
@@ -24,7 +24,31 @@ describe('TaskService', () => {
         expect(taskService.isCronJobRunning()).toBe(false);
 
         // handleCron() 메서드를 호출하면 Cron 작업이 실행되도록 예상
-        taskService.handleCron();
+        taskService.handleCron1();
+        expect(taskService.isCronJobRunning()).toBe(true);
+    });
+
+    it('should handle cron job2', () => {
+        // Jest의 useFakeTimers()를 사용하여 시간을 조작할 수 있음
+        jest.useFakeTimers();
+
+        // handleCron() 메서드를 호출하기 전에 Cron 작업이 실행되지 않았을 것으로 예상
+        expect(taskService.isCronJobRunning()).toBe(false);
+
+        // handleCron() 메서드를 호출하면 Cron 작업이 실행되도록 예상
+        taskService.handleCron2();
+        expect(taskService.isCronJobRunning()).toBe(true);
+    });
+
+    it('should handle cron job3', () => {
+        // Jest의 useFakeTimers()를 사용하여 시간을 조작할 수 있음
+        jest.useFakeTimers();
+
+        // handleCron() 메서드를 호출하기 전에 Cron 작업이 실행되지 않았을 것으로 예상
+        expect(taskService.isCronJobRunning()).toBe(false);
+
+        // handleCron() 메서드를 호출하면 Cron 작업이 실행되도록 예상
+        taskService.handleCron3();
         expect(taskService.isCronJobRunning()).toBe(true);
     });
 

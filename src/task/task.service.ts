@@ -3,48 +3,18 @@ import { Cron } from '@nestjs/schedule';
 
 import { SlackService } from '../slack/slack.service';
 import { CaverService } from '../klaytn/caver/caver.service'
-import { SlackMessage } from '../slack/slack.messge';
+import { SlackMessage } from '../slack/slack.message';
 import { logger } from 'config/winston';
 
 
 @Injectable()
 export class TaskService {
-    private slackService = new SlackService('https://hooks.slack.com/services/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');
+    private slackService = new SlackService('https://hooks.slack.com/services/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');
     private caverService = new CaverService('https://public-node-api.klaytnapi.com/v1/cypress');
 
     private isCronJobActive: boolean = false;
 
-    @Cron('0 */10 * * * *') // run every 10 minutes
-    async handleCron1() {
-        this.isCronJobActive = true;
-
-        let accountAddress = '0x2fd3ff6e4ead7430ea25bab5e5b2b073492b7e6e'
-        let accountName = 'Reward: Kakao Pay 3'
-
-        const [currentBalance, transactionCount, currentBlockNumber, /* blockHistory */] = await Promise.all([
-            this.caverService.getBalance(accountAddress),
-            this.caverService.getTransactionCount(accountAddress),
-            this.caverService.getCurrentBlockNumber(),
-            // this.caverService.getBlockHistory(112020370, (await this.caverService.getCurrentBlockNumber()))
-        ]);
-
-        logger.info(`balance: ${currentBalance}`)
-        logger.info(`transactionCount: ${transactionCount}`)
-        logger.info(`currentBlockNumber: ${currentBlockNumber}`)
-        // logger.info(`blockHistory: ${blockHistory}`)
-
-        const message = new SlackMessage(accountAddress, accountName, currentBalance, transactionCount, currentBlockNumber)
-
-        await this.slackService.sendMessage(message);
-    }
-
-    @Cron('0 0 * * * *') // runs every hour at the 0 minute.
-    async handleCron2() {
-        this.isCronJobActive = true;
-
-        let accountAddress = '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf'
-        let accountName = 'Reward: Kakao Pay'
-
+    private async getAccountByCaverAndSendSlack(accountAddress: string, accountName: string) {
         const [currentBalance, transactionCount, currentBlockNumber] = await Promise.all([
             this.caverService.getBalance(accountAddress),
             this.caverService.getTransactionCount(accountAddress),
@@ -55,9 +25,35 @@ export class TaskService {
         logger.info(`transactionCount: ${transactionCount}`)
         logger.info(`currentBlockNumber: ${currentBlockNumber}`)
 
-        const message = new SlackMessage(accountAddress, accountName, currentBalance, transactionCount, currentBlockNumber)
+        const message = new SlackMessage(
+            accountAddress,
+            accountName,
+            currentBalance,
+            transactionCount,
+            currentBlockNumber
+        ).payload;
 
         await this.slackService.sendMessage(message);
+    }
+
+    @Cron('0 0 * * * *') // runs every hour at the 0 minute.
+    async handleCron1() {
+        this.isCronJobActive = true;
+
+        let accountAddress = '0x2fd3ff6e4ead7430ea25bab5e5b2b073492b7e6e'
+        let accountName = 'Reward: Kakao Pay 3'
+
+        await this.getAccountByCaverAndSendSlack(accountAddress, accountName)
+    }
+
+    @Cron('0 0/5 * * * *') // run every 5 minutes
+    async handleCron2() {
+        this.isCronJobActive = true;
+
+        let accountAddress = '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf'
+        let accountName = 'Reward: Kakao Pay'
+
+        await this.getAccountByCaverAndSendSlack(accountAddress, accountName)
     }
 
     @Cron('0 0 0 * * *') // run every midnight
@@ -71,27 +67,9 @@ export class TaskService {
             { accountAddress: '0x020794caf06273ef3a9b4b0323c72341ec070b15', accountName: 'Reward1 Account' },
         ];
 
-        array.forEach(async (account) => {
-            const [currentBalance, transactionCount, currentBlockNumber] = await Promise.all([
-                this.caverService.getBalance(account.accountAddress),
-                this.caverService.getTransactionCount(account.accountAddress),
-                this.caverService.getCurrentBlockNumber(),
-            ]);
-
-            logger.info(`balance: ${currentBalance}`)
-            logger.info(`transactionCount: ${transactionCount}`)
-            logger.info(`currentBlockNumber: ${currentBlockNumber}`)
-
-            const message = new SlackMessage(
-                account.accountAddress,
-                account.accountName,
-                currentBalance,
-                transactionCount,
-                currentBlockNumber
-            )
-
-            await this.slackService.sendMessage(message);
-        })
+        await Promise.all(array.map(async (account) => {
+            await this.getAccountByCaverAndSendSlack(account.accountAddress, account.accountName);
+        }));
     }
 
     isCronJobRunning(): boolean {

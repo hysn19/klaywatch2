@@ -13,6 +13,7 @@ export class TaskService {
 
   private isCronJobActive = false;
   private readonly tasks: Task[];
+  private readonly tasks: Task[];
 
   constructor(
     private readonly slackService: SlackService,

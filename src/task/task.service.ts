@@ -1,4 +1,4 @@
-import { Injectable, HttpService } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { SlackService } from '../slack/slack.service';
 import { CaverService } from '../klaytn/caver/caver.service';
@@ -14,25 +14,12 @@ export class TaskService {
   constructor(
     private readonly slackService: SlackService,
     private readonly caverService: CaverService,
-    private readonly httpService: HttpService, // Assuming you need to use HttpService for API calls
   ) {
     this.tasks = [
-      new Task(
-        '0x2fd3ff6e4ead7430ea25bab5e5b2b073492b7e6e',
-        'Reward: Kakao Pay 3',
-      ),
-      new Task(
-        '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf',
-        'Reward: Kakao Pay',
-      ),
-      new Task(
-        '0x2888d9dcbd6cefb92a76712eca61391c37df8122',
-        'StakingV1 Account',
-      ),
-      new Task(
-        '0x4Ff8B6c558cBA6b20c962F301908D1D70cEEEA7c',
-        'StakingV2 Account',
-      ),
+      new Task('0x2fd3ff6e4ead7430ea25bab5e5b2b073492b7e6e', 'Reward: Kakao Pay 3'),
+      new Task('0x1f55eadcc398e9a2d3b8b505c993e19d210786bf', 'Reward: Kakao Pay'),
+      new Task('0x2888d9dcbd6cefb92a76712eca61391c37df8122', 'StakingV1 Account'),
+      new Task('0x4Ff8B6c558cBA6b20c962F301908D1D70cEEEA7c', 'StakingV2 Account'),
       new Task('0xbe02aba56bae1624e2c4f029e3a79308e2a19e98', 'AuthFee Account'),
       new Task('0x020794caf06273ef3a9b4b0323c72341ec070b15', 'Reward1 Account'),
     ];

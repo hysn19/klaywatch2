@@ -77,8 +77,7 @@ export class TaskService {
 
     isAnomalyDetected(accountAddress, currentBalance, transactionCount): boolean {
         return accountAddress === '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf'
-            && currentBalance !== '18721282.982378695'
-            && transactionCount > 0;
+            && (currentBalance !== 18721282.982378695 || transactionCount > 0);
     }
 
     isCronJobRunning(): boolean {

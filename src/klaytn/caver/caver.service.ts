@@ -7,8 +7,8 @@ import * as Caver from 'caver-js/index';
 export class CaverService {
   private readonly caver: Caver;
 
-  constructor(rpcUrl: string) {
-    this.caver = new Caver(rpcUrl);
+  constructor() {
+    this.caver = new Caver('https://public-node-api.klaytnapi.com/v1/cypress');
   }
 
   async getBalance(accountAddress: string) {

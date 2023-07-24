@@ -6,10 +6,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TaskModule } from './task/task.module';
 
 @Module({
-  imports: [
-    ScheduleModule.forRoot(), TaskModule
-  ],
+  imports: [ScheduleModule.forRoot(), TaskModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

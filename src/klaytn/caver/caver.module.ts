@@ -1,7 +1,7 @@
-import { Module } from "@nestjs/common";
-import { CaverService } from "./caver.service";
+import { Module } from '@nestjs/common';
+import { CaverService } from './caver.service';
 
 @Module({
-    providers: [CaverService]
+  providers: [CaverService],
 })
-export class CaverModule { }
+export class CaverModule {}

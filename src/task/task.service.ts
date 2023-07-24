@@ -22,27 +22,27 @@ export class TaskService {
     accountName: string,
   ) {
 		try {
-    const [currentBalance, transactionCount, currentBlockNumber] =
+			const [currentBalance, transactionCount, currentBlockNumber] =
       await Promise.all([
         this.caverService.getBalance(accountAddress),
         this.caverService.getTransactionCount(accountAddress),
         this.caverService.getCurrentBlockNumber(),
       ]);
+			
+			logger.info(`balance: ${currentBalance}`);
+			logger.info(`transactionCount: ${transactionCount}`);
+			logger.info(`currentBlockNumber: ${currentBlockNumber}`);
 
-    logger.info(`balance: ${currentBalance}`);
-    logger.info(`transactionCount: ${transactionCount}`);
-    logger.info(`currentBlockNumber: ${currentBlockNumber}`);
+			const message = new SlackMessage(
+				accountAddress,
+   			accountName,
+				currentBalance,
+				transactionCount,
+				currentBlockNumber,
+				this.isAnomalyDetected(accountAddress, currentBalance, transactionCount),
+			).payload;
 
-    const message = new SlackMessage(
-      accountAddress,
-      accountName,
-      currentBalance,
-      transactionCount,
-      currentBlockNumber,
-      this.isAnomalyDetected(accountAddress, currentBalance, transactionCount),
-    ).payload;
-
-    await this.slackService.sendMessage(message);
+			await this.slackService.sendMessage(message);
 		} catch (error) {
 			logger.error('Error occurred while processing: ${error}')
 		}

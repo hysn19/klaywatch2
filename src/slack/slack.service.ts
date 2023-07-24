@@ -11,7 +11,11 @@ export class SlackService {
   }
 
   async sendMessage(message: object) {
-    await this.webhook.send(message);
-    logger.info('Message sent successfully');
+    try {
+      await this.webhook.send(message);
+      logger.info('Message sent successfully');
+    } catch (error) {
+      logger.error('Error occurred while sending the message:', error);
+    }
   }
 }

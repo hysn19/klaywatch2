@@ -8,9 +8,6 @@ import { logger } from 'config/winston';
 
 @Injectable()
 export class TaskService {
-  //private slackService = new SlackService('https://hooks.slack.com/services/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',);
-  //private caverService = new CaverService('https://public-node-api.klaytnapi.com/v1/cypress',);
-
   private isCronJobActive = false;
   private readonly tasks: Task[];
 
@@ -36,11 +33,11 @@ export class TaskService {
           this.caverService.getTransactionCount(task.accountAddress),
           this.caverService.getCurrentBlockNumber(),
         ]);
-  
+
       logger.info(`balance: ${currentBalance}`);
       logger.info(`transactionCount: ${transactionCount}`);
       logger.info(`currentBlockNumber: ${currentBlockNumber}`);
-  
+
       const message = new SlackMessage(
         task.accountAddress,
         task.accountName,
@@ -49,7 +46,7 @@ export class TaskService {
         currentBlockNumber,
         this.isAnomalyDetected(task.accountAddress, currentBalance, transactionCount),
       ).payload;
-  
+
       await this.slackService.sendMessage(message);
     } catch (error) {
       logger.error(`Error occurred while processing ${task.accountName}: ${error}`)
@@ -61,29 +58,32 @@ export class TaskService {
       ? this.tasks.slice(startIndex, endIndex + 1)
       : [this.tasks[startIndex]];
 
-      await Promise.all(
-        tasktoProcess.map((task) => this.getAccountByCaverAndSendSlack(task)),
-      );
+    await Promise.all(
+      tasktoProcess.map((task) => this.getAccountByCaverAndSendSlack(task)),
+    );
 
-      this.isCronJobActive = false;
+    this.isCronJobActive = false;
   }
 
   @Cron(CronExpression.EVERY_HOUR)
   handleCron1() {
+    logger.info(`handleCron1 executed >>`)
     this.isCronJobActive = true;
     this.processTasks(0);
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
   handleCron2() {
+    logger.info(`handleCron2 executed >>`)
     this.isCronJobActive = true;
     this.processTasks(1);
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   handleCron3() {
+    logger.info(`handleCron3 executed >>`)
     this.isCronJobActive = true;
-    this.processTasks(2, 5);    
+    this.processTasks(2, 5);
   }
 
   isAnomalyDetected(
@@ -106,5 +106,5 @@ class Task {
   constructor(
     public readonly accountAddress: string,
     public readonly accountName: string,
-  ) {}
+  ) { }
 }

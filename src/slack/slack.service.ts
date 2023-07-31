@@ -7,7 +7,7 @@ export class SlackService {
   private readonly webhook: IncomingWebhook;
 
   constructor() {
-    this.webhook = new IncomingWebhook('https://hooks.slack.com/services/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') // #noti-클레이-모니터링
+    this.webhook = new IncomingWebhook('https://hooks.slack.com/services/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') // #noti-클레이-모니터링
   }
 
   async sendMessage(message: object) {

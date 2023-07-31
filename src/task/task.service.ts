@@ -27,6 +27,8 @@ export class TaskService {
 
   private async getAccountByCaverAndSendSlack(task: Task) {
     try {
+      logger.info(`🔹 Processing account: ${task.accountName} (${task.accountAddress})`);
+
       const [currentBalance, transactionCount, currentBlockNumber] =
         await Promise.all([
           this.caverService.getBalance(task.accountAddress),
@@ -34,9 +36,9 @@ export class TaskService {
           this.caverService.getCurrentBlockNumber(),
         ]);
 
-      logger.info(`balance: ${currentBalance}`);
-      logger.info(`transactionCount: ${transactionCount}`);
-      logger.info(`currentBlockNumber: ${currentBlockNumber}`);
+      logger.info(`🔸 Balance: ${currentBalance}`);
+      logger.info(`🔸 Transaction Count: ${transactionCount}`);
+      logger.info(`🔸 Current Block Number: ${currentBlockNumber}`);
 
       const message = new SlackMessage(
         task.accountAddress,
@@ -66,24 +68,30 @@ export class TaskService {
   }
 
   @Cron(CronExpression.EVERY_HOUR)
-  handleCron1() {
-    logger.info(`handleCron1 executed >>`)
+  async processHourlyTasks() {
     this.isCronJobActive = true;
-    this.processTasks(0);
+    logger.info('🚩 Hourly account balance check started.');
+    logger.info('🕐 Cron Expression: EVERY_HOUR');
+    await this.processTasks(0);
+    logger.info('✅ processHourlyTasks completed.');
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
-  handleCron2() {
-    logger.info(`handleCron2 executed >>`)
+  async processTenMinutesTasks() {
     this.isCronJobActive = true;
-    this.processTasks(1);
+    logger.info('🚩 Account balance check every 10 minutes started.');
+    logger.info('🕐 Cron Expression: EVERY_10_MINUTES');
+    await this.processTasks(1);
+    logger.info('✅ processTenMinutesTasks completed.');
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  handleCron3() {
-    logger.info(`handleCron3 executed >>`)
+  async processDailyTasks() {
     this.isCronJobActive = true;
-    this.processTasks(2, 5);
+    logger.info('🚩 Daily account balance check started.');
+    logger.info('🕐 Cron Expression: EVERY_DAY_AT_MIDNIGHT');
+    await this.processTasks(2, 5);
+    logger.info('✅ processDailyTasks completed.');
   }
 
   isAnomalyDetected(
@@ -91,8 +99,8 @@ export class TaskService {
     currentBalance: number,
     transactionCount: number,
   ): boolean {
-    if (accountAddress === '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf') {
-      return currentBalance !== 18721282.982378695 || transactionCount > 0;
+    if (accountAddress == '0x1f55eadcc398e9a2d3b8b505c993e19d210786bf') {
+      return currentBalance != 18721282.982378695 || transactionCount > 0;
     }
     return false;
   }

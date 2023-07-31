@@ -43,8 +43,8 @@ export class SlackMessage {
             {
               type: 'mrkdwn',
               text: isAnomalyDetected
-                ? `*점검결과:*\n:white_check_mark: 이상없음 :white_check_mark:`
-                : `*점검결과:*\n:rotating_light: 이상감지(계정 상태를 확인해주세요) :rotating_light:`,
+                ? `*점검결과:*\n:rotating_light: 이상감지(계정 상태를 확인해주세요) :rotating_light:` // true
+                : `*점검결과:*\n:white_check_mark: 이상없음 :white_check_mark:`,                  // false
             },
             {
               type: 'mrkdwn',
